@@ -1,0 +1,97 @@
+<head>
+
+  <title>Self Portrait</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+
+  <!-- Load three.js -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.106.2/build/three.min.js"></script>
+  <!-- Load scatter-gl.js -->
+  <script src="https://cdn.jsdelivr.net/npm/scatter-gl@0.0.1/lib/scatter-gl.min.js"></script>
+  <style>body {
+      background-color: black;
+    }
+
+    .canvas-wrapper,
+    #scatter-gl-container {
+      display: inline-block;
+      vertical-align: top;
+
+    }
+
+    .canvas-wrapper {
+
+      border-radius: 25px;
+    }
+
+    .canvas-wrapper canvas {
+      border-radius: 25px;
+      border: 1px solid white
+    }
+
+    #scatter-gl-container {
+      position: relative;
+      border-radius: 25px;
+      border: 2px solid white;
+      
+    }
+
+    /* center the canvas within its wrapper */
+    #scatter-gl-container canvas {
+      transform: translate3d(-50%, -50%, 0);
+      left: 50%;
+      top: 50%;
+      position: absolute;
+      border-radius: 25px;
+    }</style>
+
+</head>
+
+<body>
+  <div id="main">
+
+
+      <nav class="navbar navbar-light bg-light">
+        <div class="container-fluid">
+          <span class="navbar-brand mb-0 h1">:: self portrait ::</span>
+        </div>
+      </nav>
+
+    <div class="container" style="padding: 25px">
+      <div class="row">
+        <div class="col-md-5">
+          <div class="canvas-wrapper">
+            <canvas id="output"></canvas>
+            <video id="video" playsinline="" style="
+                -webkit-transform: scaleX(-1);
+                transform: scaleX(-1);
+                visibility: hidden;
+                width: auto;
+                height: auto;
+                ">
+            </video>
+          </div>
+        </div>
+        <div class="col-md-2">
+          <div class="container">
+            <button type="button" id="capture" class="btn btn-light">Capture</button>
+          </div>
+        </div>
+        <div class="col-md-5">
+          <div id="scatter-gl-container"></div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-4">
+          <img id="result" style="display: none;" src="" width="250" height="250">
+        </div>
+
+      </div>
+
+
+    </div>
+  </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.6/dat.gui.min.js"></script>
+<script src="/self_portrait.e31bb0bc.js"></script>
