@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>Face Mesh</title>
+  <script src="phaser.min.js"></script>
+  <script src="enable3d.phaserExtension.0.22.0.min.js"></script>
+</head>
+<style>
+  body {
+    margin:0;
+    padding: 0;
+  }
+</style>
+<body>
+
+  <script>
+
+
+
+    const { enable3d, Scene3D, Canvas, THREE } = ENABLE3D
+
+    class MainScene extends Scene3D {
+      constructor() {
+        super({ key: 'MainScene' })
+      }
+
+      init() {
+        this.accessThirdDimension()
+        // function exportCanvasAsPNG(id, fileName, dataUrl) {
+        //   var canvasElement = document.querySelector('canvas');
+        //   var MIME_TYPE = "image/png";
+        //   var imgURL = canvasElement.toDataURL("image/png", 1);
+        //   var dlLink = document.createElement('a');
+        //   dlLink.download = 'test.png';
+        //   dlLink.href = imgURL;
+        //   dlLink.dataset.downloadurl = [MIME_TYPE, dlLink.download, dlLink.href].join(':');
+        //   document.body.appendChild(dlLink);
+        //   dlLink.click();
+        //   document.body.removeChild(dlLink);
+        // }
+
+        // setTimeout(function () {
+        //   exportCanvasAsPNG()
+        // }, 10000)
+      }
+
+      async create() {
+
+        this.dataPoints = JSON.parse(localStorage.getItem('meshData'))
+
+        const { ground, camera } = await this.third.warpSpeed();
+        // camera.position.set(0,0,0)
+        this.third.destroy(ground)
+        let faceMesh = new THREE.Group();
+
+        for (let i = 0; i < this.dataPoints.length; i++) {
+
+          let t = this.third.make.sphere({
+            radius: 1.5,
+            x: this.dataPoints[i][0] - 150,
+            y: this.dataPoints[i][1] - 150,
+            z: this.dataPoints[i][2] - 75
+          },
+            { lambert: { color: 'black' } })
+
+          faceMesh.add(t);
+        }
+
+        faceMesh.rotateZ(+9.3)
+        // faceMesh.rotateX(+1)
+        faceMesh.rotateY(+3)
+        // faceMesh.position.set(0,0,0)
+        faceMesh.scale.x = .05
+        faceMesh.scale.y = .05
+        faceMesh.scale.z = .05
+
+        this.third.add.existing(faceMesh)
+
+
+      }
+    }
+
+    const config = {
+      type: Phaser.WEBGL,
+      transparent: true,
+      // render: { preserveDrawingBuffer: false },
+      scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+        width: 500,
+        height: 500
+      },
+
+      scene: [MainScene],
+      ...Canvas()
+    }
+
+    window.addEventListener('load', () => {
+      enable3d(() => new Phaser.Game(config)).withPhysics('/ph/lib/ammo/kripken')
+    })
+  </script>
+</body>
+
+</html>
