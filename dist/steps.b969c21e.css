@@ -37,8 +37,12 @@
 {
     position: absolute;
     left: -999em;
+
 }
 
+section {
+    color: white
+}
 .wizard > .content > .title,
 .tabcontrol > .content > .title
 {
@@ -68,7 +72,7 @@
 
 .wizard > .steps .number
 {
-    font-size: 1.429em;
+    font-size: 1em;
 }
 
 .wizard > .steps > ul > li
@@ -116,7 +120,7 @@
 .wizard > .steps .current a:hover,
 .wizard > .steps .current a:active
 {
-    background: #2184be;
+    background: #d63384;
     color: #fff;
     cursor: default;
 }
@@ -125,7 +129,7 @@
 .wizard > .steps .done a:hover,
 .wizard > .steps .done a:active
 {
-    background: #9dc8e2;
+    background: #e493bb;
     color: #fff;
 }
 
@@ -254,7 +258,7 @@
 .wizard > .actions a:hover,
 .wizard > .actions a:active
 {
-    background: #2184be;
+    background: #d63384;
     color: #fff;
     display: block;
     padding: 0.5em 1em;

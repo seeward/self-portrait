@@ -1,7 +1,7 @@
 <head>
 
   <title>Self Portrait</title>
-
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
   <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"></script>
@@ -16,15 +16,18 @@
   <style>
     body {
       background-color: black;
+      
     }
 
     .canvas-wrapper,
     #scatter-gl-container {
       display: inline-block;
       vertical-align: top;
-
+      margin-top: 20px;
     }
-
+    a, a:hover, a:visited {
+      color: #D63384
+    }
     .canvas-wrapper {
 
       border-radius: 25px;
@@ -56,75 +59,202 @@
 <body style="margin: 10px">
   <div id="main">
 
-    <div id="example-basic">
-      <h3>Self Portait</h3>
-      <section>
-        
-      </section>
-      <h3>Encode</h3>
-      <section>
-        <button class="btn btn-dark" id="init" type="button">Turn on video</button>
-        <button class="btn btn-dark" id="addmesh" type="button">Toggle Mesh</button>
-        <div class="canvas-wrapper">
-          <canvas id="output"></canvas>
-          <video id="video" playsinline style="
-              -webkit-transform: scaleX(-1);
-              transform: scaleX(-1);
-              visibility: hidden;
-              width: auto;
-              height: auto;
-              ">
-          </video>
+    <div class="container">
+      <div class="row">
+        <div class="col-3">
+          <div class="container" style="height: 650px;text-align: center;">
+            <div class="canvas-wrapper">
+              <canvas id="output"></canvas>
+              <video id="video" playsinline style="
+                  -webkit-transform: scaleX(-1);
+                  transform: scaleX(-1);
+                  visibility: hidden;
+                  width: auto;
+                  height: auto;
+                  ">
+              </video>
+            </div>
+            <br />
+            <div id="scatter-gl-container"></div>
+            
+          </div>
+          <img src="logo.png" style="border-radius: 3px;" width="50" />
         </div>
-        <div id="scatter-gl-container"></div>
+        <div class="col-9">
+          <div id="example-basic">
+            <h3>Start</h3>
+            <section>
+              <div class="container">
+                <div class="row">
+                  <div class="col-4">
+                    <div class="container" style="text-align: center;">
+                      <button type="button" class="btn" style="margin:0;padding:0" data-bs-toggle="popover" title="Face Mesh" data-bs-trigger="focus" 
+                        data-bs-content="A face mesh is a map of 468 physical locations on your face. Each location is an X,Y and Z location in 3D space that can be used to calculate a person's facial fingerprint. In computer graphics a face mesh is often rendered as a Polygon Mesh represnting each location in a 3D virtural space.">
+                        <img src="mesh_example.png" style="border-radius: 25px;margin-bottom: 20px;" width="250" />
+                      </button>
+      
+                      <br />
+                    
+                        <h4>A Mask Tells us More Than a Face - Oscar Wilde</h4>
+            
+      
+                    </div>
+      
+                  </div>
+                  <div class="col">
+                    <div class="container">
+                      <p>
+                        Increasingly our identity is being reduced down to the numeric result of 
+                        <a target="_blank" href="https://en.wikipedia.org/wiki/Facial_recognition_system#:~:text=Popular%20recognition%20algorithms%20include%20principal,neuronal%20motivated%20dynamic%20link%20matching.">
+                          facial recognition</a>
+                         algorithms. Thousands of micro-calculations are performed almost instantly on the distance between the physical points on our faces (and Irises). 
+                        These long floating point numbers, that are the result of these calculations, get recorded and re-tested and eventually become, to a certain degree, 
+                        the proof of who we are. (atleast to the machines...)
+                      </p>
+                        <code style="margin-bottom: 20px!important;">{ "your_identity" : "erwewewrg8jwefhweuf8wehwr9" }</code>
+                      
+                      <p style="margin-top: 20px!important;">
+                        Self Portrait give you the opportunity to discover, explore and even get creative with this same dataset produced by <a href="https://paperswithcode.com/task/facial-landmark-detection" target="_blank">Face Mesh technologies.</a>
+                      </p>
+                      <p>Click next down below to get started...</p>
+                    </div>
+                    
+      
+                  </div>
+                </div>
+              </div>
+            </section>
+            <h3>Encode</h3>
+            <section style="height: 500px">
+              <div class="container">
+                <div class="row">
+                  <div class="col-4" style="text-align: center;">
+                    <button class="btn btn-dark" style="width:100%" id="init" type="button">Start Video</button>
+                    
+                  </div>
+                  <div class="col-8">
+                    <div class="container">
+                      <p>
+                      We will need to have some input in order to generate the Face Mesh. 
+                      Ideally you will have access to a webcam and can click the 'Start Video' button. 
+                      You will need to allo the browser to access your webcam signal.
+                    </p>
+                    <p>
+                      Once your video is enabled you will see a face mesh has been rendered on top of your live video. 
+                       This is a result of the FaceMesh machine learning algorithm predicting where the hundreds of points on your fae will be in the next video frame. 
+                      
+                    </p>
+                  </div>
+                  </div>
+                </div>
+              </div>
+              
+      
+            </section>
+            <h3>Generate</h3>
+            <section>
+              <div class="container">
+                <div class="row">
+                  <div class="col-4">
+                    <button class="btn btn-dark" style="width: 100%" id="transfer" type="button">Generate 3D Model</button>
+                    <div class="container" style="margin-top: 20px;">
+                      <p>Now that we have captured the landmarks of your face, we can generate a 3D model by clicking the 'Generate 3D Model' button.
+                        Try to get your face in the center of the image before you click the button. If you need to remake your model you can click the button again. 
+                      </p>
+                      <p>
+                        Once your model is generated you can navigate around the 3D space with your mouse or trackpad.
+                      </p>
+                    </div>
+                  </div>
+                  <div class="col-8">
+                   
+                    <div class="container">
+                      <iframe id="world" style="display:none;width: 500px;height: 500px;border-radius: 25px;"></iframe>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+            <h3>Explore</h3>
+            <section>
+              <div class="container">
+                <div class="row">
+                  <div class="col-4" style="margin:0;padding:0">
+                    
+                      <button class="btn btn-dark" id="capture"  style="width:100%;margin-bottom: 5px;"  type="button">Capture Portrait</button>
+
+                      <select class="form-select"  style="width:100%;margin-bottom: 5px;"  id="captureType" aria-label="Default select example">
+                        <option value="#" selected>:Capture Type</option>
+                        <option value="1">Face with Mesh Overlay</option>
+                        <option value="2">Face Mesh Only - Points</option>
+                        <option value="3">Face Mesh Only - 3D Polygon</option>
+
+                      </select>
+
+                      <img id="result" style="display: none;border: 1px solid white;margin:0;padding:0" src="" width="250" height="250" />
+
+
+                      <button class="btn btn-dark" id="ml"  style="display:none;width:100%;margin-bottom: 5px;"  type="button">Generate Machine Portrait</button>
+                      
+                      <select class="form-select"  style="width:100%;margin-bottom: 5px;display:none;"  id="styles" aria-label="Default select example">
+                        <option value="#" selected>Select Style:</option>
+                        <option value="1">One</option>
+                        <option value="2">Two</option>
+                        <option value="3">Three</option>
+                        <option value="4">Four</option>
+                        <option value="5">Five</option>
+                        <option value="6">Six</option>
+                        <option value="7">Seven</option>
+                        <option value="8">Eight</option>
+                        <option value="9">Nine</option>
+                        <option value="10">Ten</option>
+                        <option value="11">Eleven</option>
+                      </select>
+                      <!-- <input style="width:100%;margin-top: 5px;" type="file" onchange="handleLocalImage" class="form-control-file" id="localfile"> -->
+
+               
+                
+                  </div>
+                  <div class="col-8">
+                    <div class="container" style="text-align: center;">
+                      
+                      
+                      <img id="styledResult" style="display: none;border-radius: 25px;padding:20px" src="" width="500" height="500"/>
+
         
-      </section>
-      <h3>Generate</h3>
-      <section>
-        <p>Wonderful transition effects.</p>
-      </section>
-      <h3>Explore</h3>
-      <section>
-        <p>The next and previous buttons help you to navigate through your content.</p>
-      </section>
-      <h3>Propagate</h3>
-      <section>
-        <p>The next and previous buttons help you to navigate through your content.</p>
-      </section>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+            </section>
+            <h3>Propagate</h3>
+            <section>
+              <p>The next and previous buttons help you to navigate through your content.</p>
+            </section>
+          </div>
+        </div>
+        <canvas id="stylized1" style="display: none;" src="" width="250" height="250" />
+      </div>
     </div>
 
 
 
 
-    <div class="container" style="padding: 5px">
+
+    <div class="container" style="padding: 5px;margin-top: 1000px;">
       <div class="row">
         <div class="col-md-5">
-     
-          
+
+
         </div>
         <div class="col-md-2">
 
           <div class="d-grid gap-2">
             <!-- <button class="btn btn-dark" id="init" type="button">Init</button> -->
-            <button class="btn btn-dark" id="capture" type="button">Capture Portrait</button>
-            <button class="btn btn-dark" id="transfer" type="button">Make 3D Model</button>
-            <button class="btn btn-dark" id="ml" type="button">Generate Machine Portrait</button>
-            <select class="form-select" id="styles" aria-label="Default select example">
-              <option selected>Select Style</option>
-              <option value="1">One</option>
-              <option value="2">Two</option>
-              <option value="3">Three</option>
-              <option value="4">Four</option>
-              <option value="5">Five</option>
-              <option value="6">Six</option>
-              <option value="7">Seven</option>
-              <option value="8">Eight</option>
-              <option value="9">Nine</option>
-              <option value="10">Ten</option>
-              <option value="11">Eleven</option>
-            </select>
+            
             <br />
-            <input style="width:100%" type="file" onchange="handleLocalImage" class="form-control-file" id="localfile">
             <button class="btn btn-dark" id="localfileprocess" type="button">Extract Face Mesh</button>
           </div>
           <!-- <button type="button" id="capture" class="btn btn-light">Capture</button> -->
@@ -134,23 +264,14 @@
         </div>
       </div>
 
-      <div class="row">
-        <div class="col-md-4">
-          <img id="result" style="display: none;" src="" width="250" height="250" />
-        </div>
-        <div class="col-md-4">
-          <img id="resultmesh" style="display: none;" src="" width="250" height="250" />
-        </div>
-        <div class="col-md-4">
-          <img id="resultpoints" style="display: none;" src="" width="250" height="250" />
-        </div>
+
+        
 
 
       </div>
 
       <div class="row">
         <div class="col-md-4">
-          <canvas id="stylized1" src="" width="250" height="250" />
         </div>
         <div class="col-md-4">
           <canvas id="stylized2" src="" width="250" height="250" />
@@ -203,9 +324,13 @@
           jQuery("#example-basic").steps({
             headerTag: "h3",
             bodyTag: "section",
-            autoFocus: true
-          });
+            autoFocus: true,
 
+          });
+          var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+          var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+            return new bootstrap.Popover(popoverTriggerEl)
+          })
           jQuery("#localfile").on('change', function () {
             handleLocalImage()
           });
@@ -213,6 +338,7 @@
 
         function handleLocalImage() {
           console.log('into')
+
           const input = document.querySelector('#localfile')
           if (input.files && input.files[0]) {
             var reader = new FileReader();

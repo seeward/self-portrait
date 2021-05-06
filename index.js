@@ -78,7 +78,7 @@ async function renderPrediction() {
   ctx3.clearRect(0, 0, canvas.width, canvas.height);
   ctx.drawImage(video, 0, 0, videoWidth, videoHeight, 0, 0, canvas.width, canvas.height);
 
-  if (predictions.length > 0 && addMesh) {
+  if (predictions.length) {
 
     predictions.forEach(prediction => {
       // console.log(prediction)
@@ -116,7 +116,7 @@ async function renderPrediction() {
       }
 
     });
-  }
+
 
   if (renderPointcloud && state.renderPointcloud && scatterGL != null) {
     const pointsData = predictions.map((prediction) => {
@@ -141,6 +141,8 @@ async function renderPrediction() {
     }
     scatterGLHasInitialized = true;
   }
+  }
+
 
 
   requestAnimationFrame(renderPrediction);
@@ -226,29 +228,24 @@ async function setupVideo() {
 }
 async function transferStyle() {
   const contentImg = document.getElementById('result');
-  const contentImg2 = document.getElementById('resultmesh');
-  const contentImg3 = document.getElementById('resultpoints');
+
 
   const selectedStyle = document.querySelector('#styles').value;
   const styleImg = document.getElementById('style' + selectedStyle);
 
-  const canvas1 = document.getElementById('stylized1');
-  const ctx = canvas1.getContext('2d');
+  const canvas1 = document.querySelector('#stylized1');
+  const ctx_ = canvas1.getContext('2d');
   model2.stylize(contentImg, styleImg).then((imageData) => {
-    ctx.putImageData(imageData, 0, 0);
-  });
+    
+    ctx_.putImageData(imageData, 0, 0);
+    console.log(ctx_)
+    setTimeout(()=>{
+      let d = canvas1.toDataURL();
+      document.querySelector('#styledResult').src = d
+      document.querySelector('#styledResult').style.display = 'inline'
+    }, 5000)
 
-  const canvas2 = document.getElementById('stylized2');
-  const ctx2 = canvas2.getContext('2d');
-  model2.stylize(contentImg2, styleImg).then((imageData) => {
-    ctx2.putImageData(imageData, 0, 0);
-  });
-
-  const canvas3 = document.getElementById('stylized3');
-  const ctx3 = canvas3.getContext('2d');
-  model2.stylize(contentImg3, styleImg).then((imageData) => {
-    ctx3.putImageData(imageData, 0, 0);
-  });
+  }, this);
 
 }
 function setUpButtons() {
@@ -258,14 +255,7 @@ function setUpButtons() {
 
   let processButtom = document.querySelector('#localfileprocess');
   processButtom.addEventListener('click', async () => {
-
     await renderLocalPrediction(document.querySelector('#result'));
-  })
-
-  let meshButtom = document.querySelector('#addmesh');
-  meshButtom.addEventListener('click', async () => {
-
-    addMesh = !addMesh
   })
 
 
@@ -287,33 +277,51 @@ function setUpButtons() {
     holder.style.display = 'inline'
   })
   captureButton.addEventListener('click', () => {
+    document.querySelector('#ml').style.display = 'inline'
+    document.querySelector('#styles').style.display = 'inline'
     // let img = document.querySelector('#scatter-gl-container canvas').toDataURL("img/png");
     let tests = document.querySelectorAll('canvas')
     // console.log(tests)
-    var canvas = tests[0]
+    var canvas = tests[0];
     let shdwMesh = document.querySelector("#shadowmesh")
     let shdwPts = document.querySelector("#shadowpoints")
+    let selectedType = document.querySelector("#captureType").value
 
+    let c = canvas
+    switch(selectedType){
+      case '1':
+      c = canvas
+      break
+      case '3':
+      c = shdwPts
+      break
+      case '2':
+      c = shdwMesh
+      break
+      case '#':
+        alert('Please choose a capture type.')
+        return
+    }
     setTimeout(() => {
-      var url = canvas.toDataURL();
+      var url = c.toDataURL();
       document.querySelector('#result').style.display = 'inline'
       document.querySelector('#result').style.borderRadius = '25px'
       document.querySelector('#result').style.margin = '20px'
       document.querySelector('#result').src = url
 
-      var url2 = shdwMesh.toDataURL();
-      document.querySelector('#resultmesh').style.display = 'inline'
-      document.querySelector('#resultmesh').style.borderRadius = '25px'
-      document.querySelector('#resultmesh').style.margin = '20px'
-      document.querySelector('#resultmesh').src = url2
+      // var url2 = shdwMesh.toDataURL();
+      // document.querySelector('#resultmesh').style.display = 'inline'
+      // document.querySelector('#resultmesh').style.borderRadius = '25px'
+      // document.querySelector('#resultmesh').style.margin = '20px'
+      // document.querySelector('#resultmesh').src = url2
 
-      var url2 = shdwPts.toDataURL();
-      document.querySelector('#resultpoints').style.display = 'inline'
-      document.querySelector('#resultpoints').style.borderRadius = '25px'
-      document.querySelector('#resultpoints').style.margin = '20px'
-      document.querySelector('#resultpoints').src = url2
+      // var url2 = shdwPts.toDataURL();
+      // document.querySelector('#resultpoints').style.display = 'inline'
+      // document.querySelector('#resultpoints').style.borderRadius = '25px'
+      // document.querySelector('#resultpoints').style.margin = '20px'
+      // document.querySelector('#resultpoints').src = url2
 
-    }, 400)
+    }, 400, this)
     console.log('here')
   })
 }
@@ -324,12 +332,12 @@ async function main() {
   setUpButtons();
 if (renderPointcloud) {
     document.querySelector('#scatter-gl-container').style =
-      `width: 250px; height: 250px;`;
+      `width: 225px; height: 225px;`;
 
     scatterGL = new ScatterGL(
       document.querySelector('#scatter-gl-container'),
       {
-        'rotateOnStart': false, 'selectEnabled': true,
+        'rotateOnStart': true, 'selectEnabled': true,
         'styles': {
           backgroundColor: '#9e9e9e', axesVisible: false,
           point: {
