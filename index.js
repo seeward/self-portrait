@@ -1,17 +1,65 @@
 
 import * as facemesh from '@tensorflow-models/facemesh';
 import * as tf from '@tensorflow/tfjs-core';
-import * as ml5 from 'ml5';
 import * as tfjsWasm from '@tensorflow/tfjs-backend-wasm';
 import { TRIANGULATION } from './triangulation';
 
 let model, model2, ctx, ctx2, ctx3, ctx4, videoWidth, videoHeight, video, canvas,
-  scatterGLHasInitialized = false, scatterGL, t, addMesh = false
+  scatterGLHasInitialized = false, scatterGL, t, videoStarted = false, loader
 
 const VIDEO_SIZE = 250;
 const mobile = isMobile();
 const renderPointcloud = mobile === false;
 
+function saveStyledImage(ImageElement){
+  var c = document.createElement('canvas');
+  var img = document.getElementById('styledResult');
+  c.height = img.naturalHeight;
+  c.width = img.naturalWidth;
+  var ctx = c.getContext('2d');
+  ctx.drawImage(img, 0, 0, c.width, c.height);
+  var _imageString = c.toDataURL();
+  localStorage.setItem('styledResult', _imageString);
+
+
+}
+function stepHandler(e, c, n) {
+  console.log(c, n)
+  if (n == 2 && !videoStarted) {
+
+    document.querySelector("#userMessage").innerHTML = "First Start the Video..."
+    return false
+  }
+  if (n == 3) {
+    let stls = document.querySelector("#styles")
+    stls.addEventListener('change', () => {
+      console.log(document.querySelector('#styles').value)
+      if (document.querySelector('#styles').value == '#') {
+        return
+      }
+      document.querySelector('#sourceStyle').style.display = 'inline'
+      const index = document.querySelector('#styles').value
+      console.log(document.querySelector(`#style${index}`).src)
+      document.querySelector('#sourceStyle').src = document.querySelector(`#style${index}`).src
+
+      console.log(document.querySelector('#sourceStyle').src )
+    })
+  }
+  if(n == 4){
+    console.log("into last step")
+    saveStyledImage();
+    let s = document.querySelector("#styledResult");
+    let d = document.querySelector("#nftCandidate");
+    console.log(s.src, location.origin + '/')
+    if(s.src == location.origin+ '/'){
+      document.querySelector("#userMessage").innerHTML = "You Must First Generate an Image..."
+      return false
+    }
+    d.src = s.src
+
+  }
+  return true
+}
 const state = {
   backend: 'wasm',
   maxFaces: 1,
@@ -23,7 +71,29 @@ if (renderPointcloud) {
 }
 
 jQuery(document).ready(function () {
+
+  var toastElList = [].slice.call(document.querySelectorAll('.toast'))
+  var toastList = toastElList.map(function (toastEl) {
+    return new bootstrap.Toast(toastEl, option)
+  })
+
+  jQuery("#example-basic").steps({
+    headerTag: "h3",
+    bodyTag: "section",
+    autoFocus: true,
+    onStepChanging: stepHandler
+  });
+  var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+  var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+    return new bootstrap.Popover(popoverTriggerEl)
+  })
+  jQuery("#localfile").on('change', function () {
+    handleLocalImage()
+  });
+
   jQuery('#init').on('click', () => {
+    document.querySelector('#loader').style.display = 'inline'
+    document.querySelector("#userMessage").innerHTML = "Starting Video Stream..."
     main();
   })
 
@@ -118,29 +188,29 @@ async function renderPrediction() {
     });
 
 
-  if (renderPointcloud && state.renderPointcloud && scatterGL != null) {
-    const pointsData = predictions.map((prediction) => {
-      let scaledMesh = prediction.scaledMesh;
-      t = JSON.stringify(scaledMesh)
-      localStorage.setItem('meshData', t)
-      return scaledMesh.map(point => ([-point[0], -point[1], -point[2]]));
-    });
+    if (renderPointcloud && state.renderPointcloud && scatterGL != null) {
+      const pointsData = predictions.map((prediction) => {
+        let scaledMesh = prediction.scaledMesh;
+        t = JSON.stringify(scaledMesh)
+        localStorage.setItem('meshData', t)
+        return scaledMesh.map(point => ([-point[0], -point[1], -point[2]]));
+      });
 
 
-    let flattenedPointsData = [];
-    for (let i = 0; i < pointsData.length; i++) {
-      flattenedPointsData = flattenedPointsData.concat(pointsData[i]);
+      let flattenedPointsData = [];
+      for (let i = 0; i < pointsData.length; i++) {
+        flattenedPointsData = flattenedPointsData.concat(pointsData[i]);
+      }
+      //console.log(flattenedPointsData)
+      const dataset = new ScatterGL.Dataset(flattenedPointsData);
+
+      if (!scatterGLHasInitialized) {
+        scatterGL.render(dataset);
+      } else {
+        scatterGL.updateDataset(dataset);
+      }
+      scatterGLHasInitialized = true;
     }
-    //console.log(flattenedPointsData)
-    const dataset = new ScatterGL.Dataset(flattenedPointsData);
-
-    if (!scatterGLHasInitialized) {
-      scatterGL.render(dataset);
-    } else {
-      scatterGL.updateDataset(dataset);
-    }
-    scatterGLHasInitialized = true;
-  }
   }
 
 
@@ -184,6 +254,7 @@ async function renderLocalPrediction(img) {
     });
   }
 };
+
 async function setupVideo() {
   video.play();
   videoWidth = video.videoWidth;
@@ -192,6 +263,7 @@ async function setupVideo() {
   video.height = videoHeight;
 
   canvas = document.getElementById('output');
+
   canvas.width = videoWidth;
   canvas.height = videoHeight;
 
@@ -223,26 +295,31 @@ async function setupVideo() {
   ctx.lineWidth = 0.5;
 
   model = await facemesh.load({ maxFaces: state.maxFaces });
-
+  document.querySelector('#into').style.display = 'none'
+  canvas.style.display = 'inline'
   renderPrediction();
 }
 async function transferStyle() {
   const contentImg = document.getElementById('result');
-
-
   const selectedStyle = document.querySelector('#styles').value;
   const styleImg = document.getElementById('style' + selectedStyle);
-
   const canvas1 = document.querySelector('#stylized1');
   const ctx_ = canvas1.getContext('2d');
+  document.querySelector('#loader').style.display = 'inline'
+  document.querySelector("#userMessage").innerHTML = "Generating Image..."
+
   model2.stylize(contentImg, styleImg).then((imageData) => {
-    
+
     ctx_.putImageData(imageData, 0, 0);
     console.log(ctx_)
-    setTimeout(()=>{
+    setTimeout(() => {
+
       let d = canvas1.toDataURL();
+      document.querySelector('#summary').style.display = 'none';
       document.querySelector('#styledResult').src = d
       document.querySelector('#styledResult').style.display = 'inline'
+      document.querySelector('#loader').style.display = 'none'
+      document.querySelector("#userMessage").innerHTML = "Image Generated"
     }, 5000)
 
   }, this);
@@ -253,32 +330,44 @@ function setUpButtons() {
   let captureButton = document.querySelector('#capture');
   let transferButton = document.querySelector('#transfer');
 
-  let processButtom = document.querySelector('#localfileprocess');
-  processButtom.addEventListener('click', async () => {
-    await renderLocalPrediction(document.querySelector('#result'));
-  })
-
-
-
   mlButton.addEventListener('click', async () => {
+    if (document.querySelector('#styles').value == "#") {
+      alert("Please select a style.")
+      return
+    }
+    document.querySelector('#loader').style.display = 'inline'
+    document.querySelector("#userMessage").innerHTML = "Loading ML Model..."
     model2 = new mi.ArbitraryStyleTransferNetwork();
     await model2.initialize()
-    console.log('into');
+    document.querySelector('#loader').style.display = 'none'
+    document.querySelector("#userMessage").innerHTML = "Model Loaded..."
+
     await transferStyle()
   })
-
   transferButton.addEventListener('click', () => {
+    document.querySelector('#loader').style.display = 'inline'
+    document.querySelector("#userMessage").innerHTML = "Generating 3D model..."
     // let scatter = document.querySelector('#scatter-gl-container')
     // scatter.style.display = 'none'
     let holder = document.querySelector('#world');
     // holder.src = '3d/src/index.html'// + encodeURI(snapShot);
     holder.src = '/ph/index.html'// + encodeURI(snapShot);
-
+    holder.onload = () => {
+      document.querySelector('#loader').style.display = 'none'
+      document.querySelector("#userMessage").innerHTML = ""
+    }
     holder.style.display = 'inline'
   })
   captureButton.addEventListener('click', () => {
-    document.querySelector('#ml').style.display = 'inline'
-    document.querySelector('#styles').style.display = 'inline'
+    document.querySelector("#userMessage").innerHTML = ''
+    if(document.querySelector("#captureType").value === "#"){
+      document.querySelector("#userMessage").innerHTML = 'Please choose a capture type to make a portrait.'
+      // alert('Please choose a capture type.')
+      return 
+    }
+
+    document.querySelector('#summaryPart2').style.display = 'inline'
+
     // let img = document.querySelector('#scatter-gl-container canvas').toDataURL("img/png");
     let tests = document.querySelectorAll('canvas')
     // console.log(tests)
@@ -288,49 +377,46 @@ function setUpButtons() {
     let selectedType = document.querySelector("#captureType").value
 
     let c = canvas
-    switch(selectedType){
+    switch (selectedType) {
       case '1':
-      c = canvas
-      break
+        c = canvas
+        break
       case '3':
-      c = shdwPts
-      break
+        c = shdwPts
+        break
       case '2':
-      c = shdwMesh
-      break
+        c = shdwMesh
+        break
       case '#':
         alert('Please choose a capture type.')
         return
+        break
     }
     setTimeout(() => {
       var url = c.toDataURL();
+
       document.querySelector('#result').style.display = 'inline'
       document.querySelector('#result').style.borderRadius = '25px'
       document.querySelector('#result').style.margin = '20px'
       document.querySelector('#result').src = url
-
-      // var url2 = shdwMesh.toDataURL();
-      // document.querySelector('#resultmesh').style.display = 'inline'
-      // document.querySelector('#resultmesh').style.borderRadius = '25px'
-      // document.querySelector('#resultmesh').style.margin = '20px'
-      // document.querySelector('#resultmesh').src = url2
-
-      // var url2 = shdwPts.toDataURL();
-      // document.querySelector('#resultpoints').style.display = 'inline'
-      // document.querySelector('#resultpoints').style.borderRadius = '25px'
-      // document.querySelector('#resultpoints').style.margin = '20px'
-      // document.querySelector('#resultpoints').src = url2
+      document.querySelector('#ml').style.display = 'inline'
+      document.querySelector('#styles').style.display = 'inline'
 
     }, 400, this)
-    console.log('here')
+
   })
 }
 async function main() {
+
   await tf.setBackend(state.backend);
   await setupCamera();
   await setupVideo();
+  videoStarted = true
+  document.querySelector('#loader').style.display = 'none'
+  document.querySelector("#userMessage").innerHTML = ''
   setUpButtons();
-if (renderPointcloud) {
+
+  if (renderPointcloud) {
     document.querySelector('#scatter-gl-container').style =
       `width: 225px; height: 225px;`;
 
@@ -351,7 +437,7 @@ if (renderPointcloud) {
         }
       });
   }
-  
+
 };
 
 

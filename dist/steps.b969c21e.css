@@ -41,7 +41,8 @@
 }
 
 section {
-    color: white
+    color: white;
+    font-size: 18px;
 }
 .wizard > .content > .title,
 .tabcontrol > .content > .title
@@ -120,7 +121,7 @@ section {
 .wizard > .steps .current a:hover,
 .wizard > .steps .current a:active
 {
-    background: #d63384;
+    background: #1F5359;
     color: #fff;
     cursor: default;
 }
@@ -129,7 +130,7 @@ section {
 .wizard > .steps .done a:hover,
 .wizard > .steps .done a:active
 {
-    background: #e493bb;
+    background: #5bb4be;
     color: #fff;
 }
 
@@ -137,7 +138,7 @@ section {
 .wizard > .steps .error a:hover,
 .wizard > .steps .error a:active
 {
-    background: #ff3111;
+    background: #da7768;
     color: #fff;
 }
 
@@ -206,7 +207,7 @@ section {
 {
     background: rgb(251, 227, 228);
     border: 1px solid #fbc2c4;
-    color: #8a1f11;
+    color: #ca5343;
 }
 
 .wizard > .content > .body label
@@ -217,7 +218,7 @@ section {
 
 .wizard > .content > .body label.error
 {
-    color: #8a1f11;
+    color: #c95a4b;
     display: inline-block;
     margin-left: 1.5em;
 }
@@ -258,7 +259,7 @@ section {
 .wizard > .actions a:hover,
 .wizard > .actions a:active
 {
-    background: #d63384;
+    background: #1F5359;
     color: #fff;
     display: block;
     padding: 0.5em 1em;
@@ -286,7 +287,9 @@ section {
 }
 
 
-
+code {
+    color: #1F5359
+}
 /*
     Tabcontrol
 */
